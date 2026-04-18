@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { SubmitButton } from '@/components/SubmitButton'; // ADDED CUSTOM BUTTON
+import { SubmitButton } from '@/components/SubmitButton'; 
 import { addTransaction, deleteTransaction, addMember, removeMember } from './actions';
 
 export default async function EventDetails({ params }: { params: Promise<{ id: string }> }) {
@@ -103,7 +103,7 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
             <label htmlFor="tab7" className="snap-start cursor-pointer px-4 py-2 md:px-6 md:py-3 text-sm md:text-base rounded-xl font-bold transition-all duration-200 text-white border-2 bg-white/5 border-white/20 hover:border-emerald-400/50 whitespace-nowrap peer-checked/tab7:bg-gradient-to-r peer-checked/tab7:from-emerald-600 peer-checked/tab7:to-emerald-500 peer-checked/tab7:border-emerald-400/80 peer-checked/tab7:shadow-lg peer-checked/tab7:shadow-emerald-500/50">💸 Expenses</label>
           </div>
 
-          {/* TAB 1: LOG TRANSACTION (NOW PROTECTED FROM DOUBLE CLICKS) */}
+          {/* TAB 1: LOG TRANSACTION */}
           <div className="hidden peer-checked/tab1:block">
             {isManager ? (
               <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 p-5 md:p-8 rounded-2xl shadow-xl">
@@ -122,7 +122,6 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
                     <label className="text-xs font-bold text-emerald-300 uppercase ml-1 block mb-1 md:mb-2">Who Paid?</label>
                     <select name="payer_id" className="w-full bg-slate-800 border border-white/20 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 transition text-sm md:text-base">
                       <option value="">Select Member...</option>
-                      {/* ONLY SHOW ACTIVE MEMBERS IN DROPDOWN */}
                       {members?.filter(m => m.is_active !== false).map(m => m.user_id && (<option key={m.user_id} value={m.user_id}>{m.users?.name || m.member_email}</option>))}
                     </select>
                   </div>
@@ -135,9 +134,8 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
                     <input type="text" name="description" placeholder="e.g., Bus Tickets" required className="w-full bg-slate-800 border border-white/20 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 transition text-sm md:text-base"/>
                   </div>
                   
-                  {/* NEW SMART BUTTON TO PREVENT DOUBLE CHARGE */}
                   <SubmitButton 
-                    formAction={addTransaction} 
+                    formAction={addTransaction as any} 
                     text="✓ Save Entry" 
                     loadingText="Processing..." 
                     className="mt-2 md:mt-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold py-3 px-4 rounded-lg hover:from-emerald-700 hover:to-emerald-600 transition-all shadow-lg transform hover:scale-[1.02] w-full"
@@ -149,7 +147,7 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
             )}
           </div>
 
-          {/* TAB 2: EVENT MEMBERS (NOW SHOWS REMOVED STATUS) */}
+          {/* TAB 2: EVENT MEMBERS */}
           <div className="hidden peer-checked/tab2:block">
             <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 p-5 md:p-8 rounded-2xl shadow-xl">
               <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-white border-b border-white/20 pb-4 flex items-center gap-2"><span>👥</span> Event Members</h2>
@@ -158,7 +156,7 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
                 <form className="flex flex-col sm:flex-row gap-2 mb-6 md:mb-8">
                   <input type="hidden" name="event_id" value={id} />
                   <input type="email" name="email" placeholder="friend@email.com" required className="flex-1 bg-slate-800 border border-white/20 text-white p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 transition text-sm"/>
-                  <SubmitButton formAction={addMember} text="Add Member" loadingText="Adding..." className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold py-3 sm:py-2 px-5 rounded-lg hover:from-emerald-700 transition shadow-md w-full sm:w-auto text-sm" />
+                  <SubmitButton formAction={addMember as any} text="Add Member" loadingText="Adding..." className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold py-3 sm:py-2 px-5 rounded-lg hover:from-emerald-700 transition shadow-md w-full sm:w-auto text-sm" />
                 </form>
               )}
 
@@ -177,7 +175,7 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
                       <span className="text-[10px] md:text-xs text-emerald-400 bg-emerald-500/20 px-2 md:px-3 py-1 rounded-full font-bold border border-emerald-400/30 whitespace-nowrap">Manager</span>
                     ) : (
                       isManager && m.is_active !== false && (
-                        <form action={removeMember}>
+                        <form action={removeMember as any}>
                           <input type="hidden" name="event_id" value={id} />
                           <input type="hidden" name="member_email" value={m.member_email} />
                           <button type="submit" className="text-[10px] md:text-xs text-red-400 font-bold hover:bg-red-500/20 px-2 py-1 rounded opacity-100 md:opacity-0 group-hover:opacity-100 transition">Remove</button>
@@ -269,7 +267,7 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
                 {depositsList.length > 0 ? (
                   <>
                     {depositsList.map(t => (
-                      <li key={t.id} className="py-3 md:py-4 px-3 md:px-4 flex justify-between items-center text-white bg-white/5 rounded-lg border border-white/5 group list-none"><div className="truncate pr-2"><span className="font-bold block text-white text-sm md:text-lg truncate">{t.description}</span><span className="text-[10px] md:text-sm text-gray-300 mt-1 block truncate">💳 {t.users?.name || 'Member'}</span></div><div className="flex items-center gap-2 md:gap-4"><span className="font-mono font-bold text-emerald-400 text-sm md:text-lg bg-emerald-500/20 px-2 md:px-3 py-1 rounded-lg border border-emerald-400/30 whitespace-nowrap">+{Number(t.amount).toFixed(2)} ৳</span>{isManager && (<form action={deleteTransaction}><input type="hidden" name="tx_id" value={t.id}/><input type="hidden" name="event_id" value={id}/><button type="submit" className="opacity-100 md:opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition text-lg md:text-xl p-1" title="Delete">🗑️</button></form>)}</div></li>
+                      <li key={t.id} className="py-3 md:py-4 px-3 md:px-4 flex justify-between items-center text-white bg-white/5 rounded-lg border border-white/5 group list-none"><div className="truncate pr-2"><span className="font-bold block text-white text-sm md:text-lg truncate">{t.description}</span><span className="text-[10px] md:text-sm text-gray-300 mt-1 block truncate">💳 {t.users?.name || 'Member'}</span></div><div className="flex items-center gap-2 md:gap-4"><span className="font-mono font-bold text-emerald-400 text-sm md:text-lg bg-emerald-500/20 px-2 md:px-3 py-1 rounded-lg border border-emerald-400/30 whitespace-nowrap">+{Number(t.amount).toFixed(2)} ৳</span>{isManager && (<form action={deleteTransaction as any}><input type="hidden" name="tx_id" value={t.id}/><input type="hidden" name="event_id" value={id}/><button type="submit" className="opacity-100 md:opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition text-lg md:text-xl p-1" title="Delete">🗑️</button></form>)}</div></li>
                     ))}
                   </>
                 ) : (<p className="text-gray-400 italic text-xs md:text-sm p-4 md:p-6 text-center border-2 border-dashed border-emerald-500/30 rounded-lg">📭 No deposits logged.</p>)}
@@ -285,7 +283,7 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
                 {spendsList.length > 0 ? (
                   <>
                     {spendsList.map(t => (
-                      <li key={t.id} className="py-3 md:py-4 px-3 md:px-4 flex justify-between items-center text-white bg-white/5 rounded-lg border border-white/5 group list-none"><div className="truncate pr-2"><span className="font-bold block text-white text-sm md:text-lg truncate">{t.description}</span><span className="text-[10px] md:text-sm text-gray-300 mt-1 block truncate"><span className="bg-gray-500/30 px-1 md:px-2 py-0.5 md:py-1 rounded text-[9px] md:text-xs mr-1 md:mr-2 border border-gray-400/30">{t.type.replace('_', ' ')}</span>{t.payer_id ? `💳 ${t.users?.name || 'Member'}` : '🔄 System'}</span></div><div className="flex items-center gap-2 md:gap-4"><span className="font-mono font-bold text-rose-400 text-sm md:text-lg bg-rose-500/20 px-2 md:px-3 py-1 rounded-lg border border-rose-400/30 whitespace-nowrap">-{Number(t.amount).toFixed(2)} ৳</span>{isManager && (<form action={deleteTransaction}><input type="hidden" name="tx_id" value={t.id}/><input type="hidden" name="event_id" value={id}/><button type="submit" className="opacity-100 md:opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition text-lg md:text-xl p-1" title="Delete">🗑️</button></form>)}</div></li>
+                      <li key={t.id} className="py-3 md:py-4 px-3 md:px-4 flex justify-between items-center text-white bg-white/5 rounded-lg border border-white/5 group list-none"><div className="truncate pr-2"><span className="font-bold block text-white text-sm md:text-lg truncate">{t.description}</span><span className="text-[10px] md:text-sm text-gray-300 mt-1 block truncate"><span className="bg-gray-500/30 px-1 md:px-2 py-0.5 md:py-1 rounded text-[9px] md:text-xs mr-1 md:mr-2 border border-gray-400/30">{t.type.replace('_', ' ')}</span>{t.payer_id ? `💳 ${t.users?.name || 'Member'}` : '🔄 System'}</span></div><div className="flex items-center gap-2 md:gap-4"><span className="font-mono font-bold text-rose-400 text-sm md:text-lg bg-rose-500/20 px-2 md:px-3 py-1 rounded-lg border border-rose-400/30 whitespace-nowrap">-{Number(t.amount).toFixed(2)} ৳</span>{isManager && (<form action={deleteTransaction as any}><input type="hidden" name="tx_id" value={t.id}/><input type="hidden" name="event_id" value={id}/><button type="submit" className="opacity-100 md:opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition text-lg md:text-xl p-1" title="Delete">🗑️</button></form>)}</div></li>
                     ))}
                   </>
                 ) : (<p className="text-gray-400 italic text-xs md:text-sm p-4 md:p-6 text-center border-2 border-dashed border-rose-500/30 rounded-lg">📭 No expenses logged.</p>)}

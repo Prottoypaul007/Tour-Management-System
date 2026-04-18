@@ -60,7 +60,8 @@ export default function CreateEventForm({ action }: { action: (formData: FormDat
         </div>
       </div>
 
-      <SubmitButton 
+      <SubmitButton
+      formAction={action} 
         text="Create & Send Invites" 
         loadingText="Setting up your ledger..." 
         className="mt-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold py-4 px-4 rounded-xl hover:from-emerald-700 hover:to-emerald-600 transition-all shadow-lg hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 w-full text-lg"
