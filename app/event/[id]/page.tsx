@@ -29,7 +29,13 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
     if (s.user_id && balances[s.user_id] !== undefined) balances[s.user_id] -= Number(s.amount_owed);
   });
 
+  // --- NEW CASH MATH ---
   const totalTourCost = transactions?.filter(t => t.type === 'SHARED_EXPENSE').reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  const totalDepositsAll = transactions?.filter(t => t.type === 'DEPOSIT').reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  const totalPersonalCostsAll = transactions?.filter(t => t.type === 'PERSONAL_EXPENSE').reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  
+  const availableBalance = totalDepositsAll - totalTourCost - totalPersonalCostsAll;
+  // ---------------------
 
   const debtors: any[] = [];
   const creditors: any[] = [];
@@ -73,16 +79,28 @@ export default async function EventDetails({ params }: { params: Promise<{ id: s
       <div className="relative max-w-6xl mx-auto">
         <Link href="/" className="text-emerald-400 hover:text-emerald-300 mb-4 md:mb-6 inline-flex items-center font-medium transition gap-2 text-sm md:text-base">&larr; Back to Dashboard</Link>
         
-        <div className="bg-gradient-to-r from-emerald-900/40 via-emerald-800/40 to-cyan-900/40 backdrop-blur-xl border border-emerald-500/30 p-5 md:p-8 rounded-2xl mb-8 md:mb-10 shadow-2xl flex justify-between items-center flex-col md:flex-row gap-4 md:gap-6">
-          <div className="text-center md:text-left w-full md:w-auto">
+        {/* --- UPGRADED HEADER WITH DUAL METRICS --- */}
+        <div className="bg-gradient-to-r from-emerald-900/40 via-emerald-800/40 to-cyan-900/40 backdrop-blur-xl border border-emerald-500/30 p-5 md:p-8 rounded-2xl mb-8 md:mb-10 shadow-2xl flex justify-between items-center flex-col lg:flex-row gap-6">
+          <div className="text-center lg:text-left w-full lg:w-auto">
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{event?.name}</h1>
             <p className="text-emerald-300 text-sm md:text-lg">💰 Dynamic Financial Ledger</p>
           </div>
-          <div className="text-center md:text-right w-full md:w-auto bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 p-4 md:p-6 rounded-xl border border-emerald-400/30 backdrop-blur-sm shadow-lg">
-            <p className="text-emerald-300 text-xs md:text-sm font-bold uppercase tracking-wider mb-1 md:mb-2">Total Tour Cost</p>
-            <p className="text-3xl md:text-4xl font-mono text-emerald-400 font-bold">{totalTourCost.toFixed(2)} ৳</p>
+          
+          <div className="flex gap-4 w-full lg:w-auto flex-col sm:flex-row">
+            {/* NEW: Manager's Available Balance */}
+            <div className={`text-center lg:text-right bg-gradient-to-br p-4 md:p-6 rounded-xl border backdrop-blur-sm shadow-lg flex-1 min-w-[200px] ${availableBalance >= 0 ? 'from-blue-500/20 to-cyan-500/20 border-blue-400/30' : 'from-rose-500/20 to-orange-500/20 border-rose-400/30'}`}>
+              <p className={`text-xs md:text-sm font-bold uppercase tracking-wider mb-1 md:mb-2 ${availableBalance >= 0 ? 'text-blue-300' : 'text-rose-300'}`}>Manager's Cash</p>
+              <p className={`text-3xl md:text-4xl font-mono font-bold ${availableBalance >= 0 ? 'text-blue-400' : 'text-rose-400'}`}>{availableBalance.toFixed(2)} ৳</p>
+            </div>
+
+            {/* Total Tour Cost */}
+            <div className="text-center lg:text-right bg-gradient-to-br from-emerald-500/20 to-teal-500/20 p-4 md:p-6 rounded-xl border border-emerald-400/30 backdrop-blur-sm shadow-lg flex-1 min-w-[200px]">
+              <p className="text-emerald-300 text-xs md:text-sm font-bold uppercase tracking-wider mb-1 md:mb-2">Total Tour Cost</p>
+              <p className="text-3xl md:text-4xl font-mono text-emerald-400 font-bold">{totalTourCost.toFixed(2)} ৳</p>
+            </div>
           </div>
         </div>
+        {/* --------------------------------------- */}
 
         <div className="relative w-full">
           <input type="radio" name="tab" id="tab1" className="hidden peer/tab1" defaultChecked />
